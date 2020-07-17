@@ -1,0 +1,23 @@
+cd tab;
+-----------------
+
+bison -y -d -t --debug -v --verbose -p zHdr_ -oBisonTabHdrLineParser.cpp TabHdrLineParser.y
+
+flex -8 -v -s -d -PzHdr_ -oFlexTabHdrLineLexer.cpp TabHdrLineLexer.l
+
+bison -y -d -t --debug -v --verbose -p zData_ -oBisonTabDataLineParser.cpp TabDataLineParser.y
+
+flex -8 -v -s -d -PzData_ -oFlexTabDataLineLexer.cpp TabDataLineLexer.l
+
+-----------------
+
+Place data here on linux
+
+/_/data/dw/db/office/contact/in/input.txt
+
+
+Produces
+
+/_/data/dw/schema/office/contact-schema.sql
+
+/_/data/dw/schema/office/contact-data.sql

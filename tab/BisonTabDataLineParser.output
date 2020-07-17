@@ -1,0 +1,239 @@
+Grammar
+
+    0 $accept: textfile $end
+
+    1 textfile: END_OF_FILE
+    2         | file_lines END_OF_FILE
+    3         | file_lines error
+    4         | error
+
+    5 file_lines: file_line
+    6           | file_lines file_line
+
+    7 file_line: LINE_NUMBER line_items NEW_LINE
+    8          | LINE_NUMBER COMMENT_LINE
+    9          | LINE_NUMBER NEW_LINE
+   10          | NEW_LINE
+
+   11 line_items: line_item
+   12           | line_items line_item
+
+   13 line_item: ALPHA_CELL
+   14          | QUOTED_CELL
+   15          | DELIMITER
+   16          | ERROR_CELL
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 3 4
+ALPHA_CELL (258) 13
+ERROR_CELL (259) 16
+QUOTED_CELL (260) 14
+DELIMITER (261) 15
+NEW_LINE (262) 7 9 10
+COMMENT_LINE (263) 8
+END_OF_FILE (264) 1 2
+LINE_NUMBER (265) 7 8 9
+
+
+Nonterminals, with rules where they appear
+
+$accept (11)
+    on left: 0
+textfile (12)
+    on left: 1 2 3 4, on right: 0
+file_lines (13)
+    on left: 5 6, on right: 2 3 6
+file_line (14)
+    on left: 7 8 9 10, on right: 5 6
+line_items (15)
+    on left: 11 12, on right: 7 12
+line_item (16)
+    on left: 13 14 15 16, on right: 11 12
+
+
+State 0
+
+    0 $accept: . textfile $end
+
+    error        shift, and go to state 1
+    NEW_LINE     shift, and go to state 2
+    END_OF_FILE  shift, and go to state 3
+    LINE_NUMBER  shift, and go to state 4
+
+    textfile    go to state 5
+    file_lines  go to state 6
+    file_line   go to state 7
+
+
+State 1
+
+    4 textfile: error .
+
+    $default  reduce using rule 4 (textfile)
+
+
+State 2
+
+   10 file_line: NEW_LINE .
+
+    $default  reduce using rule 10 (file_line)
+
+
+State 3
+
+    1 textfile: END_OF_FILE .
+
+    $default  reduce using rule 1 (textfile)
+
+
+State 4
+
+    7 file_line: LINE_NUMBER . line_items NEW_LINE
+    8          | LINE_NUMBER . COMMENT_LINE
+    9          | LINE_NUMBER . NEW_LINE
+
+    ALPHA_CELL    shift, and go to state 8
+    ERROR_CELL    shift, and go to state 9
+    QUOTED_CELL   shift, and go to state 10
+    DELIMITER     shift, and go to state 11
+    NEW_LINE      shift, and go to state 12
+    COMMENT_LINE  shift, and go to state 13
+
+    line_items  go to state 14
+    line_item   go to state 15
+
+
+State 5
+
+    0 $accept: textfile . $end
+
+    $end  shift, and go to state 16
+
+
+State 6
+
+    2 textfile: file_lines . END_OF_FILE
+    3         | file_lines . error
+    6 file_lines: file_lines . file_line
+
+    error        shift, and go to state 17
+    NEW_LINE     shift, and go to state 2
+    END_OF_FILE  shift, and go to state 18
+    LINE_NUMBER  shift, and go to state 4
+
+    file_line  go to state 19
+
+
+State 7
+
+    5 file_lines: file_line .
+
+    $default  reduce using rule 5 (file_lines)
+
+
+State 8
+
+   13 line_item: ALPHA_CELL .
+
+    $default  reduce using rule 13 (line_item)
+
+
+State 9
+
+   16 line_item: ERROR_CELL .
+
+    $default  reduce using rule 16 (line_item)
+
+
+State 10
+
+   14 line_item: QUOTED_CELL .
+
+    $default  reduce using rule 14 (line_item)
+
+
+State 11
+
+   15 line_item: DELIMITER .
+
+    $default  reduce using rule 15 (line_item)
+
+
+State 12
+
+    9 file_line: LINE_NUMBER NEW_LINE .
+
+    $default  reduce using rule 9 (file_line)
+
+
+State 13
+
+    8 file_line: LINE_NUMBER COMMENT_LINE .
+
+    $default  reduce using rule 8 (file_line)
+
+
+State 14
+
+    7 file_line: LINE_NUMBER line_items . NEW_LINE
+   12 line_items: line_items . line_item
+
+    ALPHA_CELL   shift, and go to state 8
+    ERROR_CELL   shift, and go to state 9
+    QUOTED_CELL  shift, and go to state 10
+    DELIMITER    shift, and go to state 11
+    NEW_LINE     shift, and go to state 20
+
+    line_item  go to state 21
+
+
+State 15
+
+   11 line_items: line_item .
+
+    $default  reduce using rule 11 (line_items)
+
+
+State 16
+
+    0 $accept: textfile $end .
+
+    $default  accept
+
+
+State 17
+
+    3 textfile: file_lines error .
+
+    $default  reduce using rule 3 (textfile)
+
+
+State 18
+
+    2 textfile: file_lines END_OF_FILE .
+
+    $default  reduce using rule 2 (textfile)
+
+
+State 19
+
+    6 file_lines: file_lines file_line .
+
+    $default  reduce using rule 6 (file_lines)
+
+
+State 20
+
+    7 file_line: LINE_NUMBER line_items NEW_LINE .
+
+    $default  reduce using rule 7 (file_line)
+
+
+State 21
+
+   12 line_items: line_items line_item .
+
+    $default  reduce using rule 12 (line_items)
