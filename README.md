@@ -11,4 +11,4 @@ The number of columns were not consistent in each row.
 
 This project produces two files:
 
-A SQL create script table and a SQL import data script.
+A SQL create table script and a SQL import data script.
