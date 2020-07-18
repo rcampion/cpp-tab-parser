@@ -35,7 +35,6 @@ CppTabParser::~CppTabParser() {
 #include <time.h>
 #include <ctype.h>
 #include <stdlib.h>
-// #include <iostream.h>
 
 #ifdef WIN32
 	#include <windows.h>
@@ -55,9 +54,9 @@ void showResults(ZLexFile *zFile);
 /***************************************************************************
 *
 * createFile
-* 	//1.open the input header file,
-*		//2.split it into two files, a header file and a data file
-*		//3.load the header portion into this file objects' text buffer
+* 	//1.open the input text file,
+*	//2.split it into two files, a header file and a data file
+*	//3.load the header portion into this file objects' text buffer
 *   //4 parse the file with a low level parser
 *   //5 display the tokens/elements of the file
 ***************************************************************************/

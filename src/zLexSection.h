@@ -82,4 +82,4 @@ public:
 
 extern ZLexFileSection* gl_pZLexFileSection;
 
-#endif //___ZLEXELEMENT_H___
+#endif //___ZLEXFILESECTION_H___

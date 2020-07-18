@@ -63,8 +63,6 @@ public:
 	StatusCode putChar(char byte);
 	StatusCode writeToFile(const char* fname,int n);
 	StatusCode writeCharToFile(FILE* fp, int c);
-	//StatusCode		prepareBufferFromText();
-	//StatusCode prepareBufferFromBinary(ZLexFileBuffer *zbuf); 
 	StatusCode prepareBufferFromBinary();
  	
 private:

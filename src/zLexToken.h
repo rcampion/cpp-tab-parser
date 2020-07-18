@@ -29,12 +29,12 @@ public:
 	ZLexToken(const ZLexToken& z);  //copy constructor
 	ZLexToken& operator= (const ZLexToken& rhs);// assignment operator
 	ZLexToken( 
-		char *text,                  /* scanned text of token         			 */   		 
+		char *text,                  /* scanned text of token         		 */
 		int  line,                   /* line number from file                */
 		int  row,                    /* row number from section              */
 		int  column,                 /* column number                        */
-		int  lineOffset,	           /* offset from beginning of line        */								 
-		int  fileOffset,	           /* offset from beginning of file        */								         
+		int  lineOffset,	         /* offset from beginning of line        */
+		int  fileOffset,	         /* offset from beginning of file        */
 		LexTokenType tokenType,      /* id, value, field,...                 */ 
 		LexDataType dataType,        /* datatype representation              */                     
 		LexScanStatus status,        /* scan status                          */  

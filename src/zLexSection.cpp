@@ -42,7 +42,7 @@ ZLexFileSection::ZLexFileSection() {
 
 /***************************************************************************
  *
- * ZLexFileSection  //contructor
+ * ZLexFileSection  //constructor
  *
  ***************************************************************************/
 ZLexFileSection::ZLexFileSection(char *szName) {
@@ -66,37 +66,6 @@ ZLexFileSection::ZLexFileSection(char *szName) {
 	m_nFileBeginOffset = 0;
 	m_nFileEndOffset = 0;
 }
-
-/***************************************************************************
- *
- * ZLexFileSection  //contructor
- *
- ***************************************************************************/
-/*
- ZLexFileSection::ZLexFileSection(char* szName, ZLexEntry* entry)
- {
- if ( (szName != NULL) && (szName[0] != '\0') )
- {
- m_szName = new char[strlen(szName) + 1];
- if (m_szName != NULL)
- {
- strcpy(m_szName, szName);
- }
- }
- else m_szName = NULL;
-
- m_nSectionId++;
- m_pCurrentEntry = entry;
- m_pEntryList    = entry;
- m_pNext         = NULL;
- m_pPrev         = NULL;
- m_nListSize     = 0;
- m_eStatus       = E_NoError;
-
- m_nFileBeginOffset = entry->getFirstElement()->getFileOffset();
- m_nFileEndOffset   = entry->getLastElement()->getFileOffset();
- }
- */
 
 /***************************************************************************
  *
@@ -206,139 +175,6 @@ StatusCode ZLexFileSection::addEntry(ZLexEntry *entry, bool begin) {
 	}
 	return E_NoError;
 }
-
-/***************************************************************************
- *
- * addEntry
- *
- * create an entry with a entry label if provided, not required
- *
- ***************************************************************************/
-/*
- ZLexEntry* ZLexFileSection::addEntry(char* szEntry, bool begin)
- {
- //if (szEntry == NULL) return NULL;
-
- ZLexEntry* pThis = m_pEntryList;
- ZLexEntry* pNew = NULL;
- if (m_pEntryList == NULL)
- {
- m_pEntryList = new ZLexEntry(szEntry);
- if (m_pEntryList == NULL) return NULL;
- pNew = m_pEntryList;
- m_nListSize = 1;
- }
- else
- {
- pNew = new ZLexEntry(szEntry);
- if (pNew == NULL) return NULL;
- if(begin)
- {
- //insert entry at beginning of list;
- pNew->setNextEntryPtr(pThis);
- pThis->setPrevEntryPtr(pNew);
- }
- else
- {
- while (pThis->getNextEntryPtr() != NULL)
- {
- pThis = pThis->getNextEntryPtr();
- }
- pThis->setNextEntryPtr(pNew);
- m_nListSize++;
- }
- }
- m_pCurrentEntry = pNew;
- return pNew;
- }
- */
-
-/***************************************************************************
- *
- * addEntryLine
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFileSection::addEntryLine(ZLexToken* lTok, bool begin)
- {
- if (lTok == NULL) return E_BadParameter;
-
- ZLexToken *tl = lTok;
-
- if(m_pEntryList == NULL)
- {
- m_pEntryList = new ZLexEntry();
- }
-
- if(begin)
- {
- while (tl != NULL)
- {
- ZLexElement* newElement = new ZLexElement(tl);
- m_pEntryList->addElement(newElement, true);
- tl = tl->next_;
- }
- }
- else
- {
- while (tl != NULL)
- {
- ZLexElement* newElement = new ZLexElement(tl);
- m_pEntryList->addElement(newElement, false);
- tl = tl->next_;
- }
- }
- return E_NoError;
- }
- */
-
-/***************************************************************************
- *
- * addEntry
- *
- ***************************************************************************/
-/*
- ZLexEntry* ZLexFileSection::addEntry(LexToken* lTok, bool begin)
- {
- if (lTok == NULL) return NULL;
-
- ZLexEntry* pEntryList = m_pEntryList;
- ZLexEntry* pNew = NULL;
-
- //ZLexElement *aTok = new ZLexElement(lTok);
-
- if (m_pEntryList == NULL)
- {
- m_pEntryList = new ZLexEntry(lTok);
- m_nListSize = 1;
- m_pCurrentEntry = m_pEntryList ;
- }
- else
- {
- if(begin)
- {
- //insert lTok at beginning of list;
- pNew = new ZLexEntry(lTok);
- pNew->setNextEntryPtr(pEntryList);
- pEntryList->setPrevEntryPtr(pNew);
- m_pCurrentEntry = pNew;
- }
- else
- {
- while (pEntryList->getNextEntryPtr() != NULL)
- {
- pEntryList = pEntryList->getNextEntryPtr();
- }
- pNew = new ZLexEntry(lTok);
- pNew->setPrevEntryPtr(pEntryList);
- pEntryList->setNextEntryPtr(pNew);
- m_pCurrentEntry= pNew;
- m_nListSize++;
- }
- }
- return pNew;
- }
- */
 
 /***************************************************************************
  *

@@ -22,14 +22,11 @@
 #include "BisonTabHdrLineParser.hpp"
 #include "zCtrlDwRuntime.h"
 
-// #include "stdafx.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
 #include <stdlib.h>
-// #include <iostream.h>
 
 #ifdef WIN32
 	#include <windows.h>
@@ -53,11 +50,9 @@
  * - the result is the number of chars actually read
  ****************************************************************************/
 //global lexer/parser buffer specific pointers
-//char* gl_pLexInputBuf = '\0';
 char* gl_pLexInputBuf;
 char* gl_pLexInputPtr = 0;
 char* gl_pLexInputLim = 0;
-//int gl_nLexInputLim = 0;
 
 /******************************************************************************
  *	ZLexBuffer constructor
@@ -82,9 +77,6 @@ ZLexBuffer::~ZLexBuffer(){
 ZLexFileBuffer::ZLexFileBuffer() {
 	pZLexBuffer_ = NULL;
 	line_=0;
-	//the next line,init is being performed in "fill"
-	//need to determine best place for this, here or there
-	//StatusCode sc = init(DEFAULT_LEX_BUFSIZE);
 }
 
 /******************************************************************************
@@ -136,7 +128,7 @@ StatusCode ZLexFileBuffer::release()
 StatusCode ZLexFileBuffer::enlarge()
 {
 	char* newbuf;
-	//increase the size of the buffer by shift opereration
+	//increase the size of the buffer by shift operation
 	//unsigned long testsize1 = (pZLexBuffer_->size_ << 1);
 	unsigned long bufsize = ((pZLexBuffer_->size_ << 1) * sizeof(char));
 	newbuf = new char[bufsize];
@@ -192,7 +184,6 @@ StatusCode ZLexFileBuffer::writeToFile(const char* fname,int startLine)
 	size_t	byteCount = 0;
 	int			thisChar = 0;
 	int			lineCount = 0;
-  //bool    b_unix = false;
 	ZLexBuffer* thisBuffer = pZLexBuffer_;
 	
 	if(thisBuffer == NULL) return E_BufferError;
@@ -254,6 +245,7 @@ StatusCode ZLexFileBuffer::writeCharToFile(FILE* fp,int c) {
 	}
 	return E_NoError;
 }
+
 /***************************************************************************
  *
  * fillFromFile
@@ -265,7 +257,6 @@ StatusCode ZLexFileBuffer::fillFromFile(const char* fname)
 	FILE		*ifp = NULL;
 	size_t	byteCount = 0;
 	int			nextChar = 0;
-  //bool    b_unix = false;
 
 	if ((ifp = fileOpen(fname,"rb")) == (FILE*)NULL)
 	{

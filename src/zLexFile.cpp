@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "../require.h"
 
 std::string& replaceAll(std::string &context, const std::string &from,
 		const std::string &to);
@@ -99,6 +98,16 @@ ZLexFile::ZLexFile() {
 	xmlOutputFileName_ = "";
 	xmlOutputFileSpec_ = "";
 
+	sqlOutputFile_ = NULL;
+	sqlOutputFileOpen_ = false;
+	sqlOutputFileName_ = "";
+	sqlOutputFileSpec_ = "";
+
+	sqlDataOutputFile_ = NULL;
+	sqlDataOutputFileOpen_ = false;
+	sqlDataOutputFileName_ = "";
+	sqlDataOutputFileSpec_ = "";
+
 }
 
 /***************************************************************************
@@ -142,6 +151,16 @@ ZLexFile::ZLexFile(ZRuntime *run) {
 	xmlOutputFileOpen_ = false;
 	xmlOutputFileName_ = "";
 	xmlOutputFileSpec_ = "";
+
+	sqlOutputFile_ = NULL;
+	sqlOutputFileOpen_ = false;
+	sqlOutputFileName_ = "";
+	sqlOutputFileSpec_ = "";
+
+	sqlDataOutputFile_ = NULL;
+	sqlDataOutputFileOpen_ = false;
+	sqlDataOutputFileName_ = "";
+	sqlDataOutputFileSpec_ = "";
 }
 ;
 
@@ -184,6 +203,16 @@ ZLexFile::ZLexFile(const char *fileName) {
 	xmlOutputFileName_ = "";
 	xmlOutputFileSpec_ = "";
 
+	sqlOutputFile_ = NULL;
+	sqlOutputFileOpen_ = false;
+	sqlOutputFileName_ = "";
+	sqlOutputFileSpec_ = "";
+
+	sqlDataOutputFile_ = NULL;
+	sqlDataOutputFileOpen_ = false;
+	sqlDataOutputFileName_ = "";
+	sqlDataOutputFileSpec_ = "";
+
 	if ((fileName != NULL) && (fileName[0] != '\0')) {
 		//m_fileName = new char[strlen(fileName) + 1];
 		inputTxtFileName_ = fileName;
@@ -212,15 +241,6 @@ ZLexFile::~ZLexFile() {
 	//which deletes the entries
 	//which deletes the elements
 	deleteSections();
-
-	/*
-	 if (m_szName != NULL)
-	 {
-	 delete m_szName;
-	 }
-
-	 m_szName = NULL;
-	 */
 
 }
 
@@ -275,11 +295,6 @@ StatusCode ZLexFile::initHeader() {
 	//close the input file
 	closeInputHeader();
 
-	//ZLexElement* pElementList = NULL;
-	//getHeaderElements(&pElementList);
-
-	//ZLexElement* listElement = pElementList;
-
 	//get a handle to the section list
 	ZLexFileSection *aHeader = sectionList_;
 	ZLexEntry *entry = aHeader->getFirstEntry();
@@ -290,9 +305,6 @@ StatusCode ZLexFile::initHeader() {
 
 	ZLexElement *elmt = entry->getFirstElement();
 	while (elmt != NULL) {
-		//if(elmt->section == LEXFILESECTION_HEADING)
-		//if(elmt->getSection() == sec)
-		//{
 
 		//create valid fieldnames
 		if (elmt->getTokenType() == LEXTOKEN_FIELDNAME) {
@@ -323,60 +335,6 @@ StatusCode ZLexFile::initHeader() {
 
 /***************************************************************************
  *
- * initData
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::initData()
- {
- //open the input file
- if(openInputData() != E_NoError)
- return E_FileError;
-
- std::vector<std::string> fileLines_ ;
- std::string line;
- std::string formatted_line = "";
- int num = 0;
- char numbuf[20];
-
- //add a section tag to the file
- formatted_line="<zsection";
- itoa(num,numbuf,10);
- //formatted_line.append(1,numbuf);
- formatted_line+=numbuf;
- //formatted_line.append(1," ");
- formatted_line+="> ";
- line.insert(0,formatted_line);
- fileLines_.push_back(line);
- fileLineBuffer_ += (line + "\n");
- num++;
-
- //mark the lines with entry tags
- while(std::getline(dataFileStream_,line)) {
- //@zl[0-9]+" "
- formatted_line="<zentry";
- itoa(num,numbuf,10);
- //formatted_line.append(1,numbuf);
- formatted_line+=numbuf;
- //formatted_line.append(1," ");
- formatted_line+="> ";
- line.insert(0,formatted_line);
- fileLines_.push_back(line);
- fileLineBuffer_ += (line + "\n");
- num++;
- }
- lineCount_ = fileLines_.size();
- if(lineCount_ == 0) return E_BufferEmpty;
-
- //close the input file
- closeInputData();
-
- return E_NoError;
-
- }
- */
-/***************************************************************************
- *
  * createHeaderFile
  *
  ***************************************************************************/
@@ -392,11 +350,7 @@ StatusCode ZLexFile::createHeaderFile() {
 	size_t loc = part[BASE].find('.');
 	if (loc != std::string::npos)
 		part[BASE].erase(loc); // Strip extension
-	/*
-	 // Force to upper case:
-	 for(int i = 0; i < part[BASE].size(); i++)
-	 part[BASE][i] = toupper(part[BASE][i]);
-	 */
+
 	// Create file names and internal tag lines:
 	part[TXT] = part[BASE] + ".txt";		//text file in
 	part[HEADER] = part[BASE] + ".zta"; //header("T"able "A"ttributes) file out
@@ -458,10 +412,10 @@ StatusCode ZLexFile::createHeaderFile() {
 /***************************************************************************
  *
  * createDataFile
- -open the input.txt file
- -skip over the header
- -write out the rest
- -close the input file
+ * -open the input.txt file
+ * -skip over the header
+ * -write out the rest
+ * -close the input file
  *
  ***************************************************************************/
 StatusCode ZLexFile::createDataFile() {
@@ -484,7 +438,6 @@ StatusCode ZLexFile::createDataFile() {
 	part[DATA] = part[BASE] + ".ztd";   //data("T"able "D"ata) file out
 	part[HLINE1] = "#<zheader>: " + part[HEADER];
 	part[DLINE1] = std::string("#<zdata>") + ": " + part[DATA];
-//---------------
 
 	//fill the char* based buffer
 	ZLexFileBuffer *fileBuffer_ = new ZLexFileBuffer();
@@ -754,12 +707,7 @@ StatusCode ZLexFile::lexHeader() {
  ***************************************************************************/
 StatusCode ZLexFile::lexData() {
 
-	//initialize the header
-	//StatusCode sc = initData();
 	StatusCode sc = E_NoError;
-
-	//if(E_NoError != sc)
-	//	return sc;
 
 	//create a new buffer with some chars
 	ZLexFileBuffer *fileBuffer_ = new ZLexFileBuffer();
@@ -852,11 +800,7 @@ StatusCode ZLexFile::parseHeader() {
  *
  ***************************************************************************/
 StatusCode ZLexFile::parseData() {
-	/*
-	 StatusCode sc = initData();
-	 if(E_NoError != sc)
-	 return sc;
-	 */
+
 	//create a new buffer and fill the char* based buffer
 	ZLexFileBuffer *fileBuffer = new ZLexFileBuffer();
 	StatusCode fs = fileBuffer->fillFromFile(inputDataFileName_.c_str());
@@ -907,236 +851,6 @@ StatusCode ZLexFile::removeLineFromBuffer(int lineNo) {
 
 /***************************************************************************
  *
- * ZLexFile parseHeaderLine
- * create a root section containing a generic file of line entries
- *
- ***************************************************************************/
-/*
- int ZLexFile::parseFileLine(std::string& s)
- {
- int nRetVal = RET_NO_ERR;
-
- //create a parser with the header line
- m_pFileParser = new ZLexParser(s);
-
- //parse the file
- try {
- LexError sc = m_pFileParser->doFileLineParse();
- //the parser should now have a linked list of parsed tokens
- //insert the parser tokens into the zfile object header section
- sectionList_->addEntryLine(m_pFileParser->getTokenList(),false);
- }
- catch (...) {
- int oops = -1;
- }
-
- //the file now has a section containing an entry of elements
- //parser is no longer needed
- delete m_pFileParser;
- m_pFileParser = 0;
-
- return nRetVal;
- }
- */
-
-/***************************************************************************
- *
- * ZLexFile parseHeaderLine
- * create a header section containing a header entry of field elements
- *
- ***************************************************************************/
-//create a header section containing a header entry of field elements
-/*
- int ZLexFile::parseHeaderLine(std::string& s)
- {
- int nRetVal = RET_NO_ERR;
-
- //create a parser with the header line
- m_pHeaderParser = new ZLexParser(s);
- //m_pHeaderParser = new ZLexParser(zfile->getHeaderLine());
-
- //parse the header
- m_pHeaderParser->doHeaderLineParse();
-
- //create a header section
- ZLexFileSection* newSection = new ZLexFileSection("header");
-
- //the parser should now have a linked list of parsed tokens
-
- //insert the parser tokens into the zfile object header section
- newSection->addEntryLine(m_pHeaderParser->getTokenList(),false);
-
- addSection(newSection, false);
-
- //the file now has a section containing a header entry of elements
- //parser is no longer needed
- delete m_pHeaderParser;
- m_pHeaderParser = 0;
-
- return nRetVal;
- }
- */
-
-/***************************************************************************
- *
- * parseDataLine
- * create a data section containing a header entry of field elements
- *
- ***************************************************************************/
-/*
- int ZLexFile::parseDataLine(std::string& s)
- {
- int nRetVal = RET_NO_ERR;
-
- //create a parser with the header line
- m_pDataParser = new ZLexParser(s);
- //m_pHeaderParser = new ZLexParser(zfile->getHeaderLine());
-
- //parse the header
- m_pDataParser->doDataLineParse();
-
- //create a header section
- ZLexFileSection* newSection = new ZLexFileSection("data");
-
- //the parser should now have a linked list of parsed tokens
-
- //insert the parser tokens into the zfile data section
- newSection->addEntryLine(m_pDataParser->getTokenList(),false);
-
- addSection(newSection, false);
-
- //the file now has a section containing a header entry of elements
- //parser is no longer needed
- delete m_pDataParser;
- m_pDataParser = 0;
-
- return nRetVal;
- }
- */
-
-/***************************************************************************
- *
- * GetSection
- *
- ***************************************************************************/
-/*
- ZLexFileSection* ZLexFile::getSection(int id)
- {
- ZLexFileSection* sec = sectionList_;
-
- while (sec != NULL)
- {
- if(sec->getSectionId() == id)
- {
- return sec;
- }
- sec = sec->getNextPtr();
- }
- return (ZLexFileSection*) NULL;
- }
- */
-
-//---------------------------------------------------------------------------
-/*
- LexError ZLexFile::parseBuffer(char* text)
- {
- LexError rc       = E_LEX_OK;
- LexError rc_parse = E_LEX_OK;
- LexError rc_load  = E_LEX_OK;
-
- char* newtext = NULL;
-
- if(text == NULL)
- return E_LEX_FILE_ERROR;
-
- int textLen = strlen(text)+1;
- newtext = (char*) malloc(textLen * sizeof(char));
- memset(newtext, '\0', textLen);
- strcpy(newtext, text);
-
- try{
- //    rc = rc_parse = (LexError) ParseLexFromBuffer(newtext);
- }
- catch(...)
- {
- return E_LEX_EXCEPTION;
- }
-
- try{
- rc = rc_load = Load();
- }
- catch(...)
- {
- return E_LEX_EXCEPTION;
- }
-
- free(newtext);
-
- //destroy all parser memory
- // todo: copy global error info
- //LexDestroy();
-
- if(rc_parse != E_LEX_OK)
- return rc_parse;
-
- return rc;
- }
-
- //---------------------------------------------------------------------------
- LexError ZLexFile::parseFile()
- {
- LexError rc       = E_LEX_OK;
- LexError rc_parse = E_LEX_OK;
- LexError rc_load  = E_LEX_OK;
- StatusCode sc;
- //FILE *fXmlOutput;
-
- if(m_szName == NULL)
- return E_LEX_FILE_ERROR;
-
- try{
- //test: find the first data line within this file
- //rc = rc_parse = (LexError) ParseLexLinesFromFile(m_szName);
- //		rc = rc_parse = (LexError) ParseLexFromFile(m_szName);
- if(rc == RET_PARSE_HEADER_OK)
- {
- sc = CreateXmlSchemaFilePass1("office","contact","d:\\dw\\schema",m_pCurrentSection);
- //sc = BuildXmlSchemaFile(m_pCurrentSection->getFirstEntry(),
- //	xmlOutputFile_, LEXFILESECTION_HEADING);
- }
- }
- catch(...)
- {
- return E_LEX_EXCEPTION;
- }
-
- try{
- rc = rc_load = Load();
- }
- catch(...)
- {
- return E_LEX_EXCEPTION;
- }
- //destroy all parser memory
- // todo: copy global error info
- //LexDestroy();
-
- if(rc_parse != E_LEX_OK)
- return rc_parse;
-
- return rc;
- }
-
- //-------------------------------------------------------------------------
- LexError ZLexFile::load()
- {
-
- return E_LEX_OK;
- }
- */
-
-/***************************************************************************
- *
  * addSection
  *
  ***************************************************************************/
@@ -1172,96 +886,6 @@ StatusCode ZLexFile::addSection(ZLexFileSection *sect, bool begin) {
 	return E_NoError;
 }
 
-/***************************************************************************
- *
- * AddSection
- *
- ***************************************************************************/
-/*
- ZLexFileSection* ZLexFile::addSection(char* szEntry, ZLexElement* aTok, bool begin)
- {
- if (szEntry == NULL) return NULL;
-
- ZLexFileSection *pThis = sectionList_;
- ZLexFileSection *pNew = NULL;
- if (sectionList_ == NULL)
- {
- sectionList_ = new ZLexFileSection(szEntry, aTok);
- if (sectionList_ == NULL) return NULL;
- pNew = sectionList_;
- listSize_ = 1;
- }
- else
- {
- pNew = new ZLexFileSection(szEntry, aTok);
- if (pNew == NULL) return NULL;
-
- if(begin)
- {
- sectionList_->setPrevPtr(pNew);
- pNew->setNextPtr(sectionList_);
- sectionList_ = pNew;
- }
- else
- {
- while (pThis->getNextPtr() != NULL)
- {
- pThis = pThis->getNextPtr();
- }
- pThis->setNextPtr(pNew);
- }
- listSize_++;
- }
- m_pCurrentSection = pNew;
- return pNew;
- }
- */
-
-/***************************************************************************
- *
- * AddSection
- *
- ***************************************************************************/
-/*
- ZLexFileSection* ZLexFile::addSection(char* szEntry, LexFileSection i, bool begin)
- {
- if (szEntry == NULL) return NULL;
-
- ZLexFileSection* pThis = sectionList_;
- ZLexFileSection* pNew = NULL;
- if (sectionList_ == NULL)
- {
- sectionList_ = new ZLexFileSection(szEntry, i);
- if (sectionList_ == NULL) return NULL;
- pNew = sectionList_;
- listSize_ = 1;
-
- }
- else
- {
- pNew = new ZLexFileSection(szEntry,i);
- if (pNew == NULL) return NULL;
-
- if(begin)
- {
- sectionList_->setPrevPtr(pNew);
- pNew->setNextPtr(sectionList_);
- sectionList_ = pNew;
- }
- else
- {
- while (pThis->getNextPtr() != NULL)
- {
- pThis = pThis->getNextPtr();
- }
- pThis->setNextPtr(pNew);
- }
- listSize_++;
- }
- m_pCurrentSection = pNew;
- return pNew;
- }
- */
 /***************************************************************************
  *
  * GetNextSection
@@ -1887,15 +1511,17 @@ void ZLexFile::showData() {
 
 				int y = s.compare("Untenberg\t");
 
-				if(x==0){
-					std::cout << "columnName =" << fieldEntries_[elmt->getColumn()] << std::endl;
+				if (x == 0) {
+					std::cout << "columnName ="
+							<< fieldEntries_[elmt->getColumn()] << std::endl;
 				}
 
-				if(y==0){
+				if (y == 0) {
 					std::cout << "Found Untenberg" << std::endl;
 				}
 
-				std::cout << "columnName =" << fieldEntries_[elmt->getColumn()] << std::endl;
+				std::cout << "columnName =" << fieldEntries_[elmt->getColumn()]
+						<< std::endl;
 
 			}
 			elmt = entry->getNextElement(false);
@@ -2104,8 +1730,6 @@ StatusCode ZLexFile::buildSqlDataFileSection(ZLexEntry *aData /*in*/,
 				values = values + ',';
 			}
 
-
-
 		}
 		elmt = aData->getNextElement(false);
 	}
@@ -2115,7 +1739,7 @@ StatusCode ZLexFile::buildSqlDataFileSection(ZLexEntry *aData /*in*/,
 	values.pop_back();
 
 	fields = fields + ")";
-	values = values +  ")";
+	values = values + ")";
 	fprintf(fOutput, "%s %s", fields.c_str(), // fieldnames
 			values.c_str() // fieldvalues
 			);
@@ -2176,10 +1800,6 @@ bool ZLexFile::prepareXmlOutputFile(const char *szDbName, const char *szDtName,
 		xmlOutputFile_ = fopen(xmlOutputFileSpec_.c_str(), "w");
 		if (xmlOutputFile_ == NULL) {
 			return xmlOutputFileOpen_ = false;
-			//gl_pContext->OutputConsoleMsg(L_ERR,"\nError, file %s could not be opened/created for writing.\n",xmlOutputFile_.get());
-			//gl_pContext->OutputConsoleMsg(L_ERR," restart with the \"-o\" option set.\n\n");
-			//ShowHelp(false);
-			//Exit(RET_FILE_ERR);
 		}
 		xmlOutputFileOpen_ = true;
 	}
@@ -2221,10 +1841,6 @@ bool ZLexFile::prepareSqlOutputFile(const char *szDbName, const char *szDtName,
 		sqlOutputFile_ = fopen(sqlOutputFileSpec_.c_str(), "w");
 		if (sqlOutputFile_ == NULL) {
 			return sqlOutputFileOpen_ = false;
-			//gl_pContext->OutputConsoleMsg(L_ERR,"\nError, file %s could not be opened/created for writing.\n",sqlOutputFile_.get());
-			//gl_pContext->OutputConsoleMsg(L_ERR," restart with the \"-o\" option set.\n\n");
-			//ShowHelp(false);
-			//Exit(RET_FILE_ERR);
 		}
 		sqlOutputFileOpen_ = true;
 	}
@@ -2266,10 +1882,6 @@ bool ZLexFile::prepareSqlDataOutputFile(const char *szDbName,
 		sqlDataOutputFile_ = fopen(sqlDataOutputFileSpec_.c_str(), "w");
 		if (sqlDataOutputFile_ == NULL) {
 			return sqlDataOutputFileOpen_ = false;
-			//gl_pContext->OutputConsoleMsg(L_ERR,"\nError, file %s could not be opened/created for writing.\n",sqlOutputFile_.get());
-			//gl_pContext->OutputConsoleMsg(L_ERR," restart with the \"-o\" option set.\n\n");
-			//ShowHelp(false);
-			//Exit(RET_FILE_ERR);
 		}
 		sqlDataOutputFileOpen_ = true;
 	}
@@ -2277,54 +1889,13 @@ bool ZLexFile::prepareSqlDataOutputFile(const char *szDbName,
 	return sqlDataOutputFileOpen_;
 }
 
-/*
- int ZLexFile::getFieldCount() {
- //change this to the parser field count result
- return listSize_;
- }
- */
-
 void ZLexFile::getHeaderElements(ZLexElement **ppList) {
-//parse the first line of the file
-//StatusCode sc = parseHeader();
-//ZLexFileSection* zsection = getNextSection(true);
-//ZLexEntry* zentry = zsection->getFirstEntry();
-//*ppList = zentry->getFirstElement();
 
 	ZLexFileSection *aHeader = sectionList_;
 	ZLexEntry *aEntry = aHeader->getFirstEntry();
 	ZLexElement *aElement = aEntry->getFirstElement();
 	*ppList = aElement;
 }
-
-/*
- ZLexElement* ZLexFile::getHeaderElements() {
- ZLexFileSection* zsection = getNextSection(true);
- ZLexEntry* zentry = zsection->getFirstEntry();
- return zentry->getFirstElement();
- }
-
- ZLexElement* ZLexFile::getDataElements() {
- //parse the first line of the file
- //StatusCode sc = parseHeader();
- ZLexFileSection* zsection = getNextSection(true);
- ZLexEntry* zentry = zsection->getFirstEntry();
- return zentry->getFirstElement();
- }
- */
-
-/***************************************************************************
- *
- * ZLexFile getFileLine
- *
- ***************************************************************************/
-/*
- std::string ZLexFile::getFileLine()
- {
- std::string z = getLine(txtStream_);
- return z;
- }
- */
 
 /***************************************************************************
  *
@@ -2391,23 +1962,6 @@ std::string ZLexFile::getAllLines(std::ifstream &inStream) {
 	}
 	return tempString;
 }
-
-/***************************************************************************
- *
- * open
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::openInputText()
- {
- txtFileStream_.open(inputTxtFileName_.c_str());
-
- if(!txtFileStream_.is_open())
- return E_FileError;
-
- return E_NoError;
- }
- */
 
 /***************************************************************************
  *
@@ -2478,22 +2032,6 @@ StatusCode ZLexFile::openInputHeader() {
 	return E_NoError;
 }
 
-/***************************************************************************
- *
- * close
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::closeInputTxt()
- {
- txtStream_.close();
-
- if(txtStream_.is_open())
- return E_FileError;
-
- return E_NoError;
- }
- */
 /***************************************************************************
  *
  * closeInputHeader
@@ -2639,318 +2177,4 @@ std::string ZLexFile::cleanHeader(std::string headerString) {
 
 	return sentence;
 }
-
-/***************************************************************************
- *
- * joinFiles
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::joinFiles(const char* fname) {
- StatusCode retval = E_NoError;
- // now join the files
- if (fOutDetail != NULL)
- {
- rewind(fOutDetail);
- fprintf(gl_pContext->getOutputLogPtr(),"\n\n** Package detail **\n");
- c = fgetc(fOutDetail);
- while (!feof(fOutDetail))
- {
- fputc(c,gl_pContext->getOutputLogPtr());
- c = fgetc(fOutDetail);
- }
- fclose(fOutDetail);
- remove(cFileSpecDetail);
- }
-
- return retval;
- }
- */
-/***************************************************************************
- *
- * fillBufferFromBuf(output,input,outputsize)
- *
- * preconditions: 
- * the input buffer has a delimitter preceeding any text that is to be scanned
- *
- * postconditions:
- * the output buffer will have a trailing new-line char to ensure proper lexer
- * termination
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::fillBufferFromBuf(ZLexFileBuffer* fileBuffer_, const char* inputBuffer, int& byteCounter)
- {
- StatusCode retval = E_NoError;
- size_t byteCount = 0;
- int	nextChar = 0;
- //bool    b_unix = false;
-
- // initialize the file inputBuffer
- fileBuffer_->buffer_ = (char*)NULL;
- //b_unix = IsFileUnixFormat(fname);
-
- if (inputBuffer == NULL) {
- retval = E_BufferEmpty;
- }
- else {
- fileBufferFree(fileBuffer_);
- //init the fileBuffer_ buffer
- //fileBuffer_->size_ = FIRSTBUFSIZE;
- //fileBuffer_->size_ = sizeof(inputBuffer + 1); //make room for "helper" '\n' char
- fileBuffer_->size_ = sizeof(inputBuffer); //make room for "helper" '\n' char
-
- //allocate buffer memory
- fileBuffer_->buffer_ = (char*)malloc(fileBuffer_->size_ * sizeof(char));
- //fileBuffer_->buffer_ = (char*)malloc(fileBuffer_->size_,"fileBuffer_->buffer_");
- //memset
- int chk = sizeof(fileBuffer_->buffer_);
- memset(fileBuffer_->buffer_,'\0',fileBuffer_->size_);
- fileBuffer_->offset_ = 0;
- if (fileBuffer_->buffer_ == (char*)NULL) {
- retval = E_BufferError;
- }
- else {
- //copy all the chars from input buffer to parser buffer
- while ((nextChar = inputBuffer[byteCount]) != NULL) {
- if (fileBufferPutChar(fileBuffer_,(unsigned char)nextChar) == E_BufferError) {
- retval = E_BufferError;
- break;
- }
- else {
- byteCount++;
- }
- }
- //"help" the lexer out by appending a newline ('\n') as the last char in line
- //so that a line of delimitted fields has, at minimum, a leading tab
- //and an ending new line.  This case would essentially be an empty field line
- //only add the new-line char if the last char is not a new-line
- int lastChar = fileBuffer_->buffer_[byteCount-1];
- if(lastChar != 10) {
- nextChar = 10;
- if (fileBufferPutChar(fileBuffer_,(unsigned char)nextChar) == E_BufferError) {
- retval = E_BufferError;
- }
- else {
- byteCount++;
- }
- }
-
- if (retval >= 0) {
- //reset the buffer offset and size
- fileBuffer_->offset_ = 0;
- fileBuffer_->size_ = byteCount;
- }
- }
- }
- byteCounter = byteCount;
- return retval;
- }
- */
-
-/******************************************************************************
- *	fileBufferInit
- ******************************************************************************/
-/*
- StatusCode ZLexFile::fileBufferInit(ZLexFileBuffer* fb, int size)
- {
- StatusCode retval = E_NoError;
-
- fileBufferFree(fb);
-
- fb->size_ = size;
- fb->buffer_ = (char*)malloc(size * sizeof(unsigned char));
- //fb->buffer_ = (char*)malloc(size * sizeof(unsigned char), "filebuffer");
- fb->offset_ = 0;
- if (fb->buffer_ != (char*)NULL)
- {
- return (fb->size_);
- }
- else
- {
- return 0;
- }
- }
- */
-/******************************************************************************
- *	fileBufferFree
- ******************************************************************************/
-/*
- StatusCode ZLexFile::fileBufferFree(ZLexFileBuffer* fb)
- {
- StatusCode retval = E_NoError;
- if (fb->buffer_ != (char*)NULL)
- {
- free(fb->buffer_);
- //free(fb->buffer_, "filebuffer");
- fb->buffer_ = (char*)NULL;
- }
- return E_NoError;
- }
- */
-
-/******************************************************************************
- *	Write a char to memory.
- ******************************************************************************/
-/*
- StatusCode ZLexFile::fileBufferPutChar(ZLexFileBuffer* fb, char byte)
- {
- StatusCode retval = E_NoError;
-
- if (fb->offset_ == fb->size_)
- {
- if (fileBufferEnlarge(fb) == E_BufferError)
- {
- return E_BufferError;
- }
- }
- fb->buffer_[fb->offset_++] = byte;
-
- return retval;
- }
- */
-
-/******************************************************************************
- *	fileBufferEnlarge
- * double the output memory size.
- ******************************************************************************/
-/*
- StatusCode ZLexFile::fileBufferEnlarge(ZLexFileBuffer* fb)
- {
- char* newbuf;
-
- newbuf = (char*)calloc((fb->size_ << 1) * sizeof(char), sizeof(char));
- if (newbuf != (char*)NULL)
- {
- memcpy(newbuf, fb->buffer_, fb->size_);
- free(fb->buffer_);
- //free(fb->buffer_,"fb->buffer_");
- fb->size_ <<= 1;
- fb->buffer_ = newbuf;
- }
- else
- return E_BufferError;
-
- return E_NoError;
- }
- */
-
-/******************************************************************************
- *	return the validity of reading the next char in the buffer.
- ******************************************************************************/
-/*
- bool ZLexFile::fileBufferCanRead(ZLexFileBuffer* fb)
- {
- bool	retval;
-
- if (fb->offset_ < fb->size_)
- {
- retval = true;
- }
- else
- {
- retval = false;
- }
- return retval;
- }
- */
-
-/***************************************************************************
- * fileOpen
- ***************************************************************************/
-/*
- FILE* ZLexFile::fileOpen(const char* fileName)
- {
- FILE* fp;
-
- if (fileName != (char*)NULL)
- {
- fp = fopen(fileName, "rb");
- }
- else
- {
- fp = (FILE*)NULL;
- }
- return (fp);
- }
- */
-
-/******************************************************************************
- *	fileOpenExt
- ******************************************************************************/
-/*
- FILE* ZLexFile::fileOpenExt(const char* name)
- {
- FILE* fp;
-
- if (name != (char*)NULL)
- {
- fp = fopen(name, "rb");
- }
- else
- {
- fp = (FILE*)NULL;
- }
- return (fp);
- }
- */
-/***************************************************************************
- *
- * parseFile
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::parseFile()
- {
- //create a root section
- sectionList_ = new ZLexFileSection("root");
-
- //open the file
- if(openInput() != E_NoError)
- return E_FileError;
-
- int nColumns, nRows;
- //parse the file into rows and columns of cells
- //m_inStream
- //this is a bogus check
- while(!m_inStream.eof()) {
- nColumns = parseFileLine(getFileLine());
- nRows++;
- }
-
- if(nRows < 1)
- return E_ParserError;
-
- return E_NoError;
-
- //close the file
- closeInput();
-
- }
- */
-
-/***************************************************************************
- *
- * fillBufferFromFile
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::fillBufferFromFile(const char* fname) {
- StatusCode retval = E_NoError;
- fileBuffer_ = new ZLexFileBuffer();
- retval = fileBuffer_->fillFromFile(fname);
- return retval;
- }
- */
-/***************************************************************************
- *
- * writeBufferToFile
- *
- ***************************************************************************/
-/*
- StatusCode ZLexFile::writeBufferToFile(const char* fname, int start) {
- StatusCode retval = fileBuffer_->writeToFile(fname,start);
- return retval;
- }
- */
 

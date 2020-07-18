@@ -108,7 +108,7 @@ typedef enum LEXTOKEN_DATATYPE {
 	LEXTOKEN_DATATYPE_CHAR,
 	LEXTOKEN_DATATYPE_TEXT,
 	LEXTOKEN_DATATYPE_VARCHAR,
-  LEXTOKEN_DATATYPE_DEFAULT,
+	LEXTOKEN_DATATYPE_DEFAULT,
 	LEXTOKEN_DATATYPE_MAX
 } LexDataType;
 
@@ -142,7 +142,7 @@ enum StatusCode
 	E_BufferError,
 	E_BufferOverflow,
 	E_DirectorySearchError,
-  E_EntrySearchError,
+	E_EntrySearchError,
 	E_Exception,
 	E_FileNameError,
 	E_FileNotFound,
@@ -246,7 +246,6 @@ enum IteratorCode
 #define L_ERR					1		// error 
 #define L_REQ					0		// requested output
 #define QUIET_DEFAULT	L_ERR
-
 
 // default filesystem constants
 #define	DEFAULT_ZDW_DBCONFIGNAME        "config.zdb"  // database configuration/preference settings

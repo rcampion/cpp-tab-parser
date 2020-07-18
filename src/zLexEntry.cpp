@@ -19,7 +19,6 @@
 #include <string>
 #include <sstream>
 
-  
 ZLexEntry* gl_pZLexEntry = NULL;
 
 /***************************************************************************
@@ -68,12 +67,9 @@ ZLexEntry::~ZLexEntry() {
 	m_nEntryId = 0;
 	m_pNextEntry = NULL;
 
-  deleteElements();
+	deleteElements();
 
-  //if(m_pElementList)
-  //  delete m_pElementList;
-      
-	if(m_szName)
+	if (m_szName)
 		delete m_szName;
 
 }
@@ -84,25 +80,22 @@ ZLexEntry::~ZLexEntry() {
  *
  ***************************************************************************/
 StatusCode ZLexEntry::deleteElements() {
-  ZLexElement *pLast, *pThis;
-  pThis = m_pElementList;
+	ZLexElement *pLast, *pThis;
+	pThis = m_pElementList;
 
 	while (pThis != NULL) {
 		pLast = pThis;
 		pThis = pThis->getNextPtr();
 		delete (pLast);
-    pLast = NULL;
+		pLast = NULL;
 	}
-
-//	if (m_pElementList != NULL)
-//    delete (m_pElementList);
 
 	return E_NoError;
 }
 
 /***************************************************************************
 *
-* ZLexEntry //contruct an entry from a string
+* ZLexEntry //construct an entry from a string
 *
 ***************************************************************************/
 ZLexEntry::ZLexEntry(char* szName) {
@@ -196,6 +189,7 @@ StatusCode ZLexEntry::getName(char szText[],int nBufferSize) const {
 
 	return eStatus;
 }
+
 /***************************************************************************
 *
 * getFirstElement
@@ -248,21 +242,21 @@ ZLexElement* ZLexEntry::getNextElement(bool bStart) {
  * findElementByName
  *
  ***************************************************************************/
-ZLexElement* ZLexEntry::findElementByIndex(int n, bool begin) {	
+ZLexElement* ZLexEntry::findElementByIndex(int n, bool begin) {
 
-	ZLexElement* tok = getFirstElement();
+	ZLexElement *tok = getFirstElement();
 
-	/* sequential search */ 
-	
-  // traverse entry tokens
-  while(tok != NULL) {
-		if(tok->getId() == n) {
-			return((ZLexElement *) tok);
+	/* sequential search */
+
+	// traverse entry tokens
+	while (tok != NULL) {
+		if (tok->getId() == n) {
+			return ((ZLexElement*) tok);
 		}
-    tok = getNextElement(false);
+		tok = getNextElement(false);
 	}
 
-	return ((ZLexElement *) NULL);
+	return ((ZLexElement*) NULL);
 }
 
 /***************************************************************************
@@ -270,36 +264,35 @@ ZLexElement* ZLexEntry::findElementByIndex(int n, bool begin) {
  * findElementByName
  *
  ***************************************************************************/
-ZLexElement* ZLexEntry::findElementByName(const char *srch1, bool begin) {	
+ZLexElement* ZLexEntry::findElementByName(const char *srch1, bool begin) {
 
 	ZLexElement *elmnt = getFirstElement();
-		
+
 	char srch11[1028];
 	char srch12[1028];
 	char cName[1024];
 
-	/* sequential search */ 
-	
-  // traverse entry elmntens
-  while(elmnt != NULL) {
-		if(elmnt->getTokenType() == LEXTOKEN_FIELDNAME) { 
-			elmnt->getName(cName,sizeof(cName)-1);
-			if(cName != NULL)		{ 
+	/* sequential search */
+
+	// traverse entry elmntens
+	while (elmnt != NULL) {
+		if (elmnt->getTokenType() == LEXTOKEN_FIELDNAME) {
+			elmnt->getName(cName, sizeof(cName) - 1);
+			if (cName != NULL) {
 				//convert to same case
-				strcpy(srch11,srch1);
+				strcpy(srch11, srch1);
 				lcase(srch11);
-				strcpy(srch12,cName);
+				strcpy(srch12, cName);
 				lcase(srch12);
-				if(strcmp(srch11,srch12) == 0) 
-				{
-					return((ZLexElement *) elmnt);
+				if (strcmp(srch11, srch12) == 0) {
+					return ((ZLexElement*) elmnt);
 				}
 			}
 		}
-    elmnt = getNextElement(false);
+		elmnt = getNextElement(false);
 	}
 
-	return ((ZLexElement *) NULL);
+	return ((ZLexElement*) NULL);
 }
 
 /***************************************************************************
@@ -339,7 +332,6 @@ StatusCode ZLexEntry::addElement(ZLexElement* elmnt, bool begin) {
 	return E_NoError;
 }
 
-
 /***************************************************************************
 *
 * addElement
@@ -378,65 +370,63 @@ StatusCode ZLexEntry::addElement(const ZLexElement& elmnt, bool begin) {
 }
 
 /***************************************************************************
-*
-* InsertElement
-* add a token after the referenced token
-***************************************************************************/
-StatusCode ZLexEntry::insertElement(ZLexElement* a_token, ZLexElement* a_pos) {
-	if (a_pos == NULL) return E_BadParameter;
-	if (a_token == NULL) return E_BadParameter;
-	
-	ZLexElement* pThis = m_pElementList;
-	ZLexElement* pPrev = NULL;
+ *
+ * InsertElement
+ * add a token after the referenced token
+ ***************************************************************************/
+StatusCode ZLexEntry::insertElement(ZLexElement *a_token, ZLexElement *a_pos) {
+	if (a_pos == NULL)
+		return E_BadParameter;
+	if (a_token == NULL)
+		return E_BadParameter;
+
+	ZLexElement *pThis = m_pElementList;
+	ZLexElement *pPrev = NULL;
 
 	if (m_pElementList == NULL) {
 		// first entry
 		m_pElementList = a_token;
 		m_nListSize = 1;
-	}
-	else {
+	} else {
 
 		pPrev = a_pos->getPrevPtr();
 
-		if(pPrev != NULL)
+		if (pPrev != NULL)
 			pPrev->setNextPtr(a_token);
 
 		a_token->setPrevPtr(pPrev);
 
 		a_pos->setPrevPtr(a_token);
-		
-	  a_token->setNextPtr(a_pos);
+
+		a_token->setNextPtr(a_pos);
 
 		m_nListSize++;
 
 	}
-  m_pCurrentElement = a_token;
+	m_pCurrentElement = a_token;
 	return E_NoError;
 }
 
 /***************************************************************************
-*
-* toXmlSchema()
-*
-***************************************************************************/
-const std::string ZLexEntry::toXmlSchema() const {  
+ *
+ * toXmlSchema()
+ *
+ ***************************************************************************/
+const std::string ZLexEntry::toXmlSchema() const {
 	std::ostringstream streamOut;
 
-	ZLexElement* pElementList = m_pElementList;
+	ZLexElement *pElementList = m_pElementList;
 
 	bool bReadNext = true;
-  // traverse elements
-  while(pElementList != NULL)
-  {
-
+	// traverse elements
+	while (pElementList != NULL) {
 		streamOut << pElementList->toXmlSchema();
 
-    if(bReadNext)
-		{
-      pElementList = pElementList->getNextPtr();
+		if (bReadNext) {
+			pElementList = pElementList->getNextPtr();
 		}
-    bReadNext = true;
-  }
+		bReadNext = true;
+	}
 
 	return streamOut.str();
 }
@@ -475,13 +465,4 @@ ZLexElement* ZLexEntry::createMockElement() {
 
 	return element;
 }
-
-
-
-
-
-
-
-
-
 

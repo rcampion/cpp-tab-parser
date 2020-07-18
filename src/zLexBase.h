@@ -72,8 +72,6 @@ extern ZLexToken *gl_pLexCurrentToken;
 extern ZLexToken *gl_pLexTokenList;
 extern ZLexToken *gl_pLexErrorList;
 
-
-
 #endif //___ZLEXBASE_H___
 
 

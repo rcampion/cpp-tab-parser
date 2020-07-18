@@ -27,10 +27,10 @@
 class ZLexElement {
 public:
 	ZLexElement();                                  // default constructor
-	ZLexElement(const ZLexToken* t);                      // construct using lexer token
+	ZLexElement(const ZLexToken* t);                // construct using lexer token
 	ZLexElement(const ZLexElement& rhs);            // copy contructor
 	ZLexElement& operator= (const ZLexElement& rhs);// assignment operator
-	~ZLexElement();				                          // destructor
+	~ZLexElement();				                    // destructor
 
 	//constant member functions
 	int            getId()                        { return m_nId;   }       // id
@@ -43,7 +43,6 @@ public:
 	int            getLineNo() const              { return m_nLine;      }  // line number
 	int            getLineOffset() const          { return m_nLineOffset;}  // offset from beginning of line
 	int            getFileOffset() const          { return m_nFileOffset;}  // offset from beginning of file
-	//LexFileSection getSection() const             { return m_eSection;   }  // file section
 	LexDataType    getDataType() const            { return m_eDataType;  }  // datatype
 	LexTokenType   getTokenType() const           { return m_eTokenType; }  // lexer token type
 	LexScanStatus  getStatus() const              { return m_eStatus;    }  // scan status
@@ -74,7 +73,7 @@ private:
 	int            m_nColumn;        // column number
 	int            m_nLineOffset;    // offset from beginning of line
 	int            m_nFileOffset;    // offset from beginning of file
-	//LexFileSection m_eSection;       // file section
+
 	LexDataType	   m_eDataType;      // datatype
 	LexTokenType   m_eTokenType;     // lexer token type
 	LexScanStatus  m_eStatus;        // scan status

@@ -52,9 +52,8 @@ void ZRuntime::print(const std::string& msg = "") {
 //			argv	- Array of parameters	
 // Outputs	: 
 //			None
-
 //*******************************************************************
-//ZRuntime* pSystemRuntime;
+
 //globals
 ZRuntime* gl_pContext;
 

@@ -13,31 +13,19 @@
 #ifndef _ZCTRLDWRUNTIME_H_
 #define _ZCTRLDWRUNTIME_H_
 
-//#include "zunixdef.h"
-//#include "zlexconst.h"
 #include <stdio.h>
 #include <fstream>
 #include <string>
 #include <vector>
-
 
 class ZRuntime  
 {
 public:
 	ZRuntime();                                  // default constructor
 	ZRuntime(int n, char * argv[]);              // construct using passed args
-	ZRuntime(const ZRuntime& rhs);               // copy contructor
-//	ZRuntime(ZRuntime rhs);                    // copy contructor
+	ZRuntime(const ZRuntime& rhs);               // copy constructor
 	ZRuntime& operator= (const ZRuntime& rhs);   // assignment operator
-	~ZRuntime();				               // destructor
-
-/*
-	ZRuntime();                                 // default constructor
-	ZRuntime(int n, char * argv[]);             // construct using passed args
-	ZRuntime(const ZRuntime& rhs);              // copy contructor
-	ZRuntime& operator= (const ZRuntime& rhs);  // assignment operator
-	virtual ~ZRuntime();				                // destructor
-*/
+	~ZRuntime();				                 // destructor
 
 private:
 	//debug begin
@@ -55,7 +43,6 @@ public:
 	int  outputLogMsg(int nLevel, char *msg, ...);
 	bool parseCommandLineOptions(int argc, char *argv[]);
 	bool prepareOutputLog();
-	//int  RevealCode();
 	void setDefaultOptions();
 	void showHelp(bool bShowHidden);
 	std::string toString();
@@ -88,7 +75,6 @@ public:
 	bool getPrintTokens();             //
 	bool getQuiet();                   //
 	int  getQuietLevel();              //
-	//bool 	revealCode();               //
 	bool getShowHiddenOptions();       //
 	bool getShowProgress();            //
 	bool getSpawnedMode();             //
@@ -96,34 +82,34 @@ public:
 	// getters
 	//database specific
 	std::string getDbConfigName();			// database: configuration/preference settings	
-	std::string getDbRootPath();				// database: full path to the root directory	
+	std::string getDbRootPath();			// database: full path to the root directory
 	std::string getDbServerName();			// database: server name	
-	std::string getDbServerPassword();	// database: user password to database server	
+	std::string getDbServerPassword();		// database: user password to database server
 	std::string getDbServerPort();			// database: server port as string	
-	std::string getDbServerUsername();	// database: user id to database server	
+	std::string getDbServerUsername();		// database: user id to database server
 
 	//datatable specific
 	std::string getDtConfigName();			// datatable: configuration/preference settings	
 	std::string getDtDataInPath();			// datawarehouse: full path to data input directory	
 	std::string getDtDataOutPath();			// datawarehouse: full path to data output directory	
-	std::string getDtFileAttribSpec();	// datatable: filespec for datatable attributes	
+	std::string getDtFileAttribSpec();		// datatable: filespec for datatable attributes
 	std::string getDtFileDataSpec();		// datatable: filespec for datatable data load	
 	std::string getDtFileInputSpec();		// datatable: filespec for the input file name = dwroot + dir + db + name	
-	std::string getDtFileSchemaName();	// datatable: schema file name to be generated	
+	std::string getDtFileSchemaName();		// datatable: schema file name to be generated
 
 	//datawarehouse specific
 	std::string getDwConfigName();			// datawarehouse: configuration/preference settings	
 	std::string getDwDataBasePath();		// datawarehouse: default database location	
-	std::string getDwDriveName();				// datawarehouse: installation drive letter	
-	std::string getDwExecPath();				// datawarehouse: full path to system executable directory	
-	std::string getDwLogName();					// datawarehouse: file spec for the system log	
-	std::string getDwLogPath();					// datawarehouse: full path to system log directory	
-	std::string getDwRootPath();				// datawarehouse: full path to the root directory	
+	std::string getDwDriveName();			// datawarehouse: installation drive letter
+	std::string getDwExecPath();			// datawarehouse: full path to system executable directory
+	std::string getDwLogName();				// datawarehouse: file spec for the system log
+	std::string getDwLogPath();				// datawarehouse: full path to system log directory
+	std::string getDwRootPath();			// datawarehouse: full path to the root directory
 	std::string getDwSchemaPath();			// datawarehouse: full path to the schema directory	
 	std::string getDwStatsFileSpec();		// datawarehouse: file spec for statisics file	
-	std::string getDwTmpPath();					// datawarehouse: path for temporary files	
-	std::string getZdwServerId();				// datawarehouse: the host name of the zdwRemoteServer	
-	std::string getZdwClientId();				// datawarehouse: computer id for logging
+	std::string getDwTmpPath();				// datawarehouse: path for temporary files
+	std::string getZdwServerId();			// datawarehouse: the host name of the zdwRemoteServer
+	std::string getZdwClientId();			// datawarehouse: computer id for logging
 	
 	char* getBaseNameFromSpec(char* filename);
 	FILE* getOutputLogPtr() {return pOutputLogFile_;}
@@ -133,7 +119,6 @@ private:
 	int	 analysisLevel_;               // detail level of analysis
 	bool checkEncoded_;                // tbd
 	bool checkFileType_;               // tbd
-	//bool checkParamTypes_;           // check command line
 	bool convertFileToWin_;            //
 	bool debugMem_;                    //
 	bool decode_;                      //
@@ -150,7 +135,6 @@ private:
 	bool printTokens_;                 //
 	bool quiet_;                       //
 	int  quietLevel_;                  //
-	//bool	revealCode_;               //
 	bool showHiddenOptions_;           //
 	bool showProgress_;                //
 	bool spawnedMode_;                 //
@@ -200,7 +184,7 @@ private:
 	int	  lexErrPlusMinusOffset_;
 
 };
-//extern ZRuntime* pSystemRuntime;
+
 extern ZRuntime* gl_pContext;
 
 #endif

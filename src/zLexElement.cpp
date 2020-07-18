@@ -37,7 +37,6 @@ ZLexElement::ZLexElement() {
 	m_nColumn     = 0;                           // column number	
 	m_nLineOffset = 0;                           // offset from beginning of line
 	m_nFileOffset = 0;                           // offset from beginning of file
-	//m_eSection    = LEXFILESECTION_UNDEFINED;    // originating file section 
 	m_eDataType   = LEXTOKEN_DATATYPE_STRING;    // datatype
 	m_eTokenType  = LEXTOKEN_TYPE_UNDEFINED;     // lexer token type
 	m_eStatus     = LEXSCAN_UNKNOWN;             // scan status
@@ -96,7 +95,7 @@ ZLexElement::ZLexElement(const ZLexToken* tok) {
 	m_nColumn     = tok->column_;                   // column number	
 	m_nLineOffset = tok->lineOffset_;	              // offset from beginning of line
 	m_nFileOffset = tok->fileOffset_;	              // offset from beginning of filE
-	//m_eSection    = (LexFileSection) tok->section_; // file section
+
 	m_eDataType   = (LexDataType) tok->dataType_;   // datatype
 	m_eTokenType  = (LexTokenType) tok->tokenType_;	// lexer token type
 	m_eStatus     = (LexScanStatus) tok->status_;   // scan status
@@ -133,15 +132,12 @@ ZLexElement& ZLexElement::operator= (const ZLexElement& rhs) {
 	else m_szText = NULL;
 
 	m_nId          = rhs.m_nId;         // id
-	//m_szName       = rhs.m_szName;      // field name
-	//m_szText       = rhs.m_szText;      // scanned text of token
 	m_nLength      = rhs.m_nLength;     // length of scanned token
 	m_nLine        = rhs.m_nLine;       // line number
 	m_nRow         = rhs.m_nRow;        // line number from section
 	m_nColumn      = rhs.m_nColumn;     // column number
 	m_nLineOffset  = rhs.m_nLineOffset; // offset from beginning of line
 	m_nFileOffset  = rhs.m_nFileOffset; // offset from beginning of file
-	//m_eSection     = rhs.m_eSection;    // file section
 	m_eDataType    = rhs.m_eDataType;   // datatype
 	m_eTokenType   = rhs.m_eTokenType;  // lexer token type
 	m_eStatus      = rhs.m_eStatus;     // scan status
@@ -180,15 +176,12 @@ ZLexElement::ZLexElement(const ZLexElement& rhs) {
 	else m_szText = NULL;
 
 	m_nId          = rhs.m_nId;         // id
-	//m_szName       = rhs.m_szName;      // field name
-	//m_szText       = rhs.m_szText;      // scanned text of token
 	m_nLength      = rhs.m_nLength;     // length of scanned token
 	m_nLine        = rhs.m_nLine;       // line number
 	m_nRow         = rhs.m_nRow;        // line number from section
 	m_nColumn      = rhs.m_nColumn;     // column number
 	m_nLineOffset  = rhs.m_nLineOffset; // offset from beginning of line
 	m_nFileOffset  = rhs.m_nFileOffset; // offset from beginning of file
-	//m_eSection     = rhs.m_eSection;    // file section
 	m_eDataType    = rhs.m_eDataType;   // datatype
 	m_eTokenType   = rhs.m_eTokenType;  // lexer token type
 	m_eStatus      = rhs.m_eStatus;     // scan status
@@ -350,25 +343,17 @@ void ZLexElement::setValuePtr(ZLexElement* pValue) {
 * toXmlSchema()
 *
 ***************************************************************************/
- //examples
-	//print the line without the size attribute
-		//<column name="Number" required="false" type="INTEGER" description="Number" />
-	
-	//print the line with the size attribute
-		//<column name="Title" required="false" type="VARCHAR" size="255" description="Title" />
-
 const std::string ZLexElement::toXmlSchema() {
 
 	char cDesc[1024];
 	char cName[1024];
 	char cText[1024];
-  bool bReadNext = true;
+	bool bReadNext = true;
 
 	std::ostringstream streamOut;
 
 	//format a xml schema column
 	if(this->getTokenType() == LEXTOKEN_FIELDNAME) {
-	//if(this->getTokenType() == LEXTOKEN_HEADERCELL) { 
 		
 		GetLexTokenDataTypeDesc(this->getDataType(), cDesc,sizeof(cDesc)-1);
 		//this->getName(cName,sizeof(cName)-1);

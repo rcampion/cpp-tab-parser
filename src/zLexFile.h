@@ -76,18 +76,14 @@ public:
 	ZLexFile();
 	ZLexFile(const char *szName);
 	ZLexFile(ZRuntime *run);
-//	ZLexFile(const ZRuntime run);
 	~ZLexFile();
 	ZLexFile& operator=(const ZLexFile &rhs);
 	StatusCode addSection(ZLexFileSection *section, bool begin);
-//	StatusCode   deleteSection(LEXFILESECTION section);
 	StatusCode deleteSections();
-	//ZLexFileBuffer*   getFileBuffer() {return fileBuffer_;};
 	std::string getLineBuffer() {
 		return fileLineBuffer_;
 	}
 	;
-//	int          getFieldCount();
 	LexError getDataError() {
 		return dataError_;
 	}
@@ -139,10 +135,10 @@ public:
 
 	StatusCode toXmlSchemaFile(const char *szDbName, const char *szDtName,
 			const char *szOutPath);
-	
+
 	StatusCode toSqlSchemaFile(const char *szDbName, const char *szDtName,
 			const char *szOutPath);
-	
+
 	StatusCode toSqlDataFile(const char *szDbName, const char *szDtName,
 			const char *szOutPath);
 
@@ -153,11 +149,6 @@ public:
 
 	void rtrim(std::string &s);
 	void replaceIllegalFieldChars(std::string &s);
-	/*
-	 int getFieldCount();
-	 ZLexElement* getHeaderElements();
-	 ZLexElement* getDataElements();
-	 */
 
 private:
 	StatusCode buildXmlSchemaFileSection(ZLexEntry *aHeader, FILE *fOutput,
@@ -182,11 +173,10 @@ private:
 	//std::string  getFileLine();
 	std::string getHeaderLine();
 
-	//StatusCode   initData();
 	StatusCode initHeader();
 	StatusCode openInputData();
 	StatusCode openInputHeader();
-	//StatusCode   openInputText();
+
 	StatusCode prepareForLex();
 	StatusCode prepareForParse();
 	bool prepareXmlOutputFile(const char *szDbName, const char *szDtName,
@@ -205,9 +195,6 @@ private:
 	std::ifstream dataFileStream_;
 	StatusCode dataStatus_;
 	LexError dataError_;
-	//ZLexParser*       dataParser_;
-
-	//ZLexFileBuffer*   fileBuffer_;
 
 	std::string fileLineBuffer_;     // text storage for lexer
 
@@ -217,7 +204,6 @@ private:
 	std::ifstream headerFileStream_;
 	StatusCode headerStatus_;
 	LexError headerError_;
-	//ZLexParser*       headerParser_;
 
 	std::string inputTxtFileName_;      //file to split
 	StatusCode inputTxtFileStatus_;
@@ -229,7 +215,7 @@ private:
 	int lineCount_;     //number of lines in input
 	int listSize_;      //number of file sections
 
-	ZRuntime *runContext_;//pointer to runtime variables - currently only need the filename - this will change
+	ZRuntime *runContext_; //pointer to runtime variables - currently only need the filename - this will change
 	ZLexFileSection *sectionList_;		//list of file sections to iterate
 	std::ifstream txtFileStream_;
 
