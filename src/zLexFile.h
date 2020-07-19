@@ -69,7 +69,12 @@
  * ZLexFile
  *
  **************************************************************************/
-/** A ZLexFile contains a name of a file to be parsed by a ZLexParser.  
+/**
+ *
+ * A ZLexFile contains a name of a file to be parsed by a ZLexParser.
+ *
+ * A ZLexFile contains ZLexFileSection (s).
+ *
  */
 class ZLexFile {
 public:
@@ -163,14 +168,11 @@ private:
 	std::string cleanHeader(std::string headerString);
 	StatusCode closeInputData();
 	StatusCode closeInputHeader();
-	//StatusCode   closeInputTxt();
 	StatusCode createHeaderFile();
 	StatusCode createDataFile();
-	//StatusCode   fillBufferFromFile(const char* fname);
 	std::string getAllLines(std::ifstream &inStream);
 	std::string getDataLine();
 	std::string getLine(std::ifstream &inStream);
-	//std::string  getFileLine();
 	std::string getHeaderLine();
 
 	StatusCode initHeader();
@@ -187,7 +189,6 @@ private:
 			const char *szPath);
 
 	StatusCode removeLineFromBuffer(int lineNo);
-	//StatusCode   writeBufferToFile(const char* fname, int n);
 
 private:
 	ZLexFileSection *currentSection_;
