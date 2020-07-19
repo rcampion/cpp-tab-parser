@@ -69,7 +69,7 @@ ZLexFileSection::ZLexFileSection(char *szName) {
 
 /***************************************************************************
  *
- * ZLexFileSection   //copy contructor
+ * ZLexFileSection   //copy constructor
  *
  ***************************************************************************/
 ZLexFileSection::ZLexFileSection(const ZLexFileSection &rhs) {
@@ -103,9 +103,6 @@ ZLexFileSection::~ZLexFileSection() {
 	m_pNext = NULL;
 
 	deleteEntries();
-
-//  if(m_pEntryList)
-//    delete m_pEntryList;
 
 	if (m_szName)
 		delete m_szName;

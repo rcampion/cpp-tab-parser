@@ -40,9 +40,6 @@ public:
 	~ZLexFileSection();
 
 	StatusCode       addEntry(ZLexEntry* entry, bool begin);
-	//ZLexEntry*     addEntry(char* szLabel, bool begin);
-	//ZLexEntry*     addEntry(LexToken *lTok, bool begin);
-	//StatusCode     addEntryLine(ZLexToken *lTok, bool begin);
 	ZLexEntry*       createMockEntry();
 	ZLexEntry*       getEntry(char *szText);
 	ZLexEntry*       getEntry(ZLexElement *tok);
